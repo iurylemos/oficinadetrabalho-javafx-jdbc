@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alerts;
@@ -35,14 +36,19 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	public void onMenuItemDepartamentoAction() {
-		loadView2("/gui/DepartamentoList.fxml");
+		//Botando dois parametros, para que não tenha que ter dois metodos loadView
+		//Na segundo parametro, vou passar uma expressão lambda
+		loadView("/gui/DepartamentoList.fxml", (DepartamentoListController controller) -> {
+			controller.setDepartamentoServico(new DepartamentoServico());
+			controller.atualizarTabelaView();
+		});
 	}
 	
 	
 
 	@FXML
 	public void onMenuItemAboutAction() {
-		loadView("/gui/About.fxml");
+		loadView("/gui/About.fxml", x-> {});
 	}
 
 	// Metodo da interface initialize
@@ -57,9 +63,14 @@ public class MainViewController implements Initializable {
 	 * para o About.
 	 * para que não seja interrompido, é de grande importância utilizar o
 	 * atributo synchronized.
+	 * 
+	 * A minha função agora vai receber o segundo parametro que vai ser uma expressão lambda
+	 * Então botei a interface Consumer e botei do tipo <T>
+	 * Só que lembrando que tenho que colocar ela <T> antes do void também.
+	 * Esse tipo <T> é um tipo qualquer.
 	 */
 
-	private synchronized void loadView(String nomeAbsoluto) {
+	private synchronized <T> void loadView(String nomeAbsoluto, Consumer<T> acaoDeInicializacao) {
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
@@ -86,48 +97,22 @@ public class MainViewController implements Initializable {
 			vBoxPrincipal.getChildren().addAll(novoVBox.getChildren());
 			
 			
+			//Comando especial para ativar o 2º Parametro que eu passar.
+			//Vou criar uma variavel do tipo T
+			//Com o nome controller
+			//E ela vai receber o meu loader.getController()
+			//O meu getController vai retornar o controller do tipo
+			//Que eu passar por parametro.
+			T controller = loader.getController();
+			//Executando a ação, pegando a variavel que veio pelo parametro
+			//E puxando o metodo para executar a função que vier por parametro
+			acaoDeInicializacao.accept(controller);
+			
+			
 			
 		} catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Erro carregando a view", e.getMessage(), AlertType.ERROR);
 		}
 	}
 	
-	private synchronized void loadView2(String nomeAbsoluto) {
-
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
-			// Fazer um objeto do tipo VBOX
-			VBox novoVBox = loader.load();
-			//Mostrar a view dentro da janela
-			//Pegando uma referencia da cena que está no Main.JAVA
-			Scene cenaPrincipal = Main.getCenaPrincipal();
-			VBox vBoxPrincipal = (VBox) ((ScrollPane) cenaPrincipal.getRoot()).getContent();
-			
-			//Guardando o 1º filho do vbox no menu
-			Node mainMenu = vBoxPrincipal.getChildren().get(0);
-			//Limpar todos os outros filhos do meu vBox.
-			vBoxPrincipal.getChildren().clear();
-			//Adicionar no vBox o mainMenu e depois os filhos do mainVbox
-			vBoxPrincipal.getChildren().add(mainMenu);
-			//Adicionando a coleção, que é os filhos do vbox que está no novoVBox
-			vBoxPrincipal.getChildren().addAll(novoVBox.getChildren());
-			
-			//loader é o objeto que carrega a view
-			//a partir desse objeto eu posso tanto carregar a view
-			//quanto também acessar o controler.
-			//Ou seja estou pegando uma referencia para o controller dessa VIEW
-			//Isso daqui é um processo manual de injetar a depedência lá no controller
-			//E depois atualizar os dados na tela do table view
-			
-			DepartamentoListController controller = loader.getController();
-			controller.setDepartamentoServico(new DepartamentoServico());
-			controller.atualizarTabelaView();
-			
-			
-			
-		} catch (IOException e) {
-			Alerts.showAlert("IO Exception", "Erro carregando a view", e.getMessage(), AlertType.ERROR);
-		}
-	}
-
 }
