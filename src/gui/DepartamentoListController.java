@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -12,8 +15,19 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.entidades.Departamento;
+import model.servicos.DepartamentoServico;
 
 public class DepartamentoListController implements Initializable {
+	
+	
+	//Depedência
+	//Não vou utilizar o new instanciando a classe
+	//Pois ai é um acoplamento forte, não é de grande utilidade
+	//Vou utilizar um SET para puxar as informações.
+	//E assim vou está injetando a depedência
+	private DepartamentoServico servico;
+	
+	
 
 	//Criar referências para os nossos componentes da tela
 	@FXML
@@ -30,15 +44,21 @@ public class DepartamentoListController implements Initializable {
 	@FXML
 	private Button btNovo;
 	
-	//Criar o metodo de tratamento de eventos do botão
+	//Pegar o servico e carregar e mostrar no TableView
+	//Vou criar um metodo auxiliar para associar.
+	//Esse ObservaBleList faz parte do JavaFX
+	private ObservableList<Departamento> obsList;
 	
+	
+	//Criar o metodo de tratamento de eventos do botão
 	public void onBtNovaAction() {
 		System.out.println("onBtNovaAction");
 	}
 	
-	
-	
-	
+	//Criando uma forma de injetar a depedência
+	public void setDepartamentoServico(DepartamentoServico servico) {
+		this.servico = servico;
+	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -71,6 +91,22 @@ public class DepartamentoListController implements Initializable {
 		//Ficar do tamanho da janela.
 		//Macete para a minha tabela acompanhar o tamanho da janela
 		tabelaViewDepartamento.prefHeightProperty().bind(stage.heightProperty());
+		
+	}
+	
+	public void atualizarTabelaView() {
+		//Programação defensiva
+		//Quando o programador não utilizar o setDepartamentoServico
+		if(servico == null) {
+			throw new IllegalStateException("O servico está nulo");
+		}
+		//Recuperar os departamentos do SERVICO
+		List<Departamento> list = servico.findAll();
+		//A partir dessa lista vou carregar dentro do meu ObservableList
+		//Instancia o observableList e pega os dados da lista.
+		obsList = FXCollections.observableArrayList(list);
+		//Carregar os itens na tabelaView e mostrar na tela.
+		tabelaViewDepartamento.setItems(obsList);
 		
 	}
 	

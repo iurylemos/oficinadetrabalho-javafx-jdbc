@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.servicos.DepartamentoServico;
 
 public class MainViewController implements Initializable {
 
@@ -34,8 +35,10 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	public void onMenuItemDepartamentoAction() {
-		loadView("/gui/DepartamentoList.fxml");
+		loadView2("/gui/DepartamentoList.fxml");
 	}
+	
+	
 
 	@FXML
 	public void onMenuItemAboutAction() {
@@ -81,6 +84,44 @@ public class MainViewController implements Initializable {
 			vBoxPrincipal.getChildren().add(mainMenu);
 			//Adicionando a coleção, que é os filhos do vbox que está no novoVBox
 			vBoxPrincipal.getChildren().addAll(novoVBox.getChildren());
+			
+			
+			
+		} catch (IOException e) {
+			Alerts.showAlert("IO Exception", "Erro carregando a view", e.getMessage(), AlertType.ERROR);
+		}
+	}
+	
+	private synchronized void loadView2(String nomeAbsoluto) {
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
+			// Fazer um objeto do tipo VBOX
+			VBox novoVBox = loader.load();
+			//Mostrar a view dentro da janela
+			//Pegando uma referencia da cena que está no Main.JAVA
+			Scene cenaPrincipal = Main.getCenaPrincipal();
+			VBox vBoxPrincipal = (VBox) ((ScrollPane) cenaPrincipal.getRoot()).getContent();
+			
+			//Guardando o 1º filho do vbox no menu
+			Node mainMenu = vBoxPrincipal.getChildren().get(0);
+			//Limpar todos os outros filhos do meu vBox.
+			vBoxPrincipal.getChildren().clear();
+			//Adicionar no vBox o mainMenu e depois os filhos do mainVbox
+			vBoxPrincipal.getChildren().add(mainMenu);
+			//Adicionando a coleção, que é os filhos do vbox que está no novoVBox
+			vBoxPrincipal.getChildren().addAll(novoVBox.getChildren());
+			
+			//loader é o objeto que carrega a view
+			//a partir desse objeto eu posso tanto carregar a view
+			//quanto também acessar o controler.
+			//Ou seja estou pegando uma referencia para o controller dessa VIEW
+			//Isso daqui é um processo manual de injetar a depedência lá no controller
+			//E depois atualizar os dados na tela do table view
+			
+			DepartamentoListController controller = loader.getController();
+			controller.setDepartamentoServico(new DepartamentoServico());
+			controller.atualizarTabelaView();
 			
 			
 			
