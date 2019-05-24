@@ -1,18 +1,27 @@
 package gui;
 
+import javafx.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import aplicacao.Main;
+import gui.util.Alerts;
+import gui.util.Utils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entidades.Departamento;
 import model.servicos.DepartamentoServico;
@@ -51,8 +60,13 @@ public class DepartamentoListController implements Initializable {
 	
 	
 	//Criar o metodo de tratamento de eventos do botão
-	public void onBtNovaAction() {
-		System.out.println("onBtNovaAction");
+	@FXML
+	public void onBtNovaAction(ActionEvent evento) {
+		//Acessar o Stage pela classe Utils
+		Stage parentStage = Utils.palcoAtual(evento);
+		//Peguei a referencia para o Stage Atual acima
+		//E passo aqui apra criar a minha janela atual
+		criarDialogForm("/gui/DepartamentoForm.fxml", parentStage);
 	}
 	
 	//Criando uma forma de injetar a depedência
@@ -107,6 +121,42 @@ public class DepartamentoListController implements Initializable {
 		obsList = FXCollections.observableArrayList(list);
 		//Carregar os itens na tabelaView e mostrar na tela.
 		tabelaViewDepartamento.setItems(obsList);
+		
+	}
+	
+	//Metodo auxiliar
+	/*
+	 * Vou colocar esse metodo recebendo como parametro uma referência
+	 * para o Stage da janela que criou a janela de Dialogo.
+	 * carregar janela para preencher um novo departamento
+	 * vou ter chamar essa função, lá no botão onBtNewAction().
+	 */
+	private void criarDialogForm(String nomeAbsoluto, Stage parentStage) {
+		//Código para instanciar a janela de dialogo.
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
+			//Chamar o painel carregando a view com a classe Pane que já existe no JavaFX
+			Pane painel = loader.load();
+			/*
+			 * Quando eu vou carregar uma janela de dialogo modal na frente janela existente
+			 * Eu vou ter que instanciar um novo Stage
+			 * ou seja vai ser um palco na frente do outro.
+			 */
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Digite os dados do departamento");
+			dialogStage.setScene(new Scene(painel));
+			//Esse setResizable diz que a janela pode ou não ser redimensionada
+			dialogStage.setResizable(false);
+			//função que pergunta quem é que é o Stage pai dessa janela ai que entra o parametro 2.
+			dialogStage.initOwner(parentStage);
+			//Esse metodo vai dizer se a janela é modal ou se tem outro comportamento.
+			//E ela vai ser modal sim, vai ficar travada enquanto não fechar ela.
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.showAndWait();
+
+		}catch (IOException e) {
+			Alerts.showAlert("IO Exception", "Erro carregando a view", e.getMessage(), AlertType.ERROR);
+		}
 		
 	}
 	

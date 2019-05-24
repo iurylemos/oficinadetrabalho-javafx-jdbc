@@ -5,9 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.mysql.jdbc.Statement;
 
@@ -15,7 +13,6 @@ import db.DB;
 import db.DbException;
 import model.dao.DepartamentoDao;
 import model.entidades.Departamento;
-import model.entidades.Vendedor;
 
 public class DepartamentoDaoJDBC implements DepartamentoDao {
 	
