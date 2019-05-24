@@ -9,6 +9,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+	
+	//Criando um atributo para ser referenciado a cena.
+	private static Scene cenaPrincipal;
+	
+	
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -29,9 +35,11 @@ public class Main extends Application {
 			
 			
 			//Cena principal
-			Scene mainScene = new Scene(scrollPane);
+			//Scene mainScene = new Scene(scrollPane);
+			//No lugar de declarar, vou só referenciar, para poder reutiliza-la
+			cenaPrincipal = new Scene(scrollPane);
 			//palco da cena, setando a cena como cena principal
-			primaryStage.setScene(mainScene);
+			primaryStage.setScene(cenaPrincipal);
 			//Titulo principal
 			primaryStage.setTitle("Sample JavaFX application");
 			//mostrando o palco
@@ -40,6 +48,13 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+	
+	//Criando um metodo para pegar a referência statica que criei no começo.
+	
+	public static Scene getCenaPrincipal() {
+		return cenaPrincipal;
+	}
+	
 
 	public static void main(String[] args) {
 		launch(args);
