@@ -66,7 +66,19 @@ public class DepartamentoListController implements Initializable {
 		Stage parentStage = Utils.palcoAtual(evento);
 		//Peguei a referencia para o Stage Atual acima
 		//E passo aqui apra criar a minha janela atual
-		criarDialogForm("/gui/DepartamentoForm.fxml", parentStage);
+		/*
+		 * Como é um botão para cadastrar um novo departamento
+		 * o formulário vai começar vázio
+		 * Então eu vou simplemente intstanciar um Departamento vázio
+		 * E não vou colocar dado nele
+		 * Só que vou injetar ele lá no controllador do Formulário.
+		 */
+		Departamento obj = new Departamento();
+		//Vou colocar um parametro a mais no criarDialogForm
+		//1º Parametro vai ser o objeto do Departamento
+		//2º Parametro vai ser o nome da tela que vou carrear
+		//3º Parametro é a Cena da janela atual.
+		criarDialogForm(obj,"/gui/DepartamentoForm.fxml", parentStage);
 	}
 	
 	//Criando uma forma de injetar a depedência
@@ -131,12 +143,24 @@ public class DepartamentoListController implements Initializable {
 	 * carregar janela para preencher um novo departamento
 	 * vou ter chamar essa função, lá no botão onBtNewAction().
 	 */
-	private void criarDialogForm(String nomeAbsoluto, Stage parentStage) {
+	private void criarDialogForm(Departamento obj, String nomeAbsoluto, Stage parentStage) {
 		//Código para instanciar a janela de dialogo.
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
 			//Chamar o painel carregando a view com a classe Pane que já existe no JavaFX
 			Pane painel = loader.load();
+			
+			//Injetar o departamento la´no controlador da tela de formulário
+			//Vou pegar uam referência para o formulário.
+			//Com esse objeto abaixo, peguei o controllador da tela que acabei
+			//De carrwegar aqui no FXMLLoader que é o formulário.
+			DepartamentoFormController controller = loader.getController();
+			//Injetar nesse controlador o departamento.
+			controller.setDepartamento(obj);
+			//E puxar o metodo de atualizar 
+			//Para carregar os dados do objeto passado no formulário.
+			controller.atualizarDadosFormulario();
+			
 			/*
 			 * Quando eu vou carregar uma janela de dialogo modal na frente janela existente
 			 * Eu vou ter que instanciar um novo Stage
