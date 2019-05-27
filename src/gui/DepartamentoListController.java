@@ -159,6 +159,13 @@ public class DepartamentoListController implements Initializable {
 			controller.setDepartamento(obj);
 			//E puxar o metodo de atualizar 
 			//Para carregar os dados do objeto passado no formulário.
+			/*
+			 * Injetando o Departamento Service
+			 * depois que criei ele no DepartamentoFormController
+			 * Ai também tenho que utilizar aqui pois se trata da janela.
+			 * Injetando manualmente a depedência
+			 */
+			controller.setDepartamentoServico(new DepartamentoServico());
 			controller.atualizarDadosFormulario();
 			
 			/*

@@ -19,4 +19,28 @@ public class Utils {
 		//Vou dar um downcasting para Stage
 		return (Stage) ((Node) evento.getSource()).getScene().getWindow();
 	}
+	
+	/*
+	 * Criar um metodo para transformar os metodos em inteiro.
+	 * 
+	 * Pode ser que o conteudo que você digitou lá na caixinha não seja valido
+	 * Nesse caso vai ser lançado uma excessão nesse parseInt
+	 * Na verdade no lugar da excessão vou retornar um valor nulo.
+	 * 
+	 * Ou eu vou converter o numero direitinho e retornar um numero
+	 * ou retorna nulo
+	 * ou seja não vai ter risco de ter excessão
+	 * Só para facilitar o nosso processo e não ter que ficar repetindo
+	 * toda vez que precisar ler o dado de uma caixinha que é inteiro.
+	 */
+	
+	
+	public static Integer tryParseToInt(String str) {
+		try {
+			return Integer.parseInt(str);
+		}catch(NumberFormatException e) {
+			return null;
+		}
+	}
+	
 }

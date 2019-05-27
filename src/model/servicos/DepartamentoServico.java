@@ -29,5 +29,21 @@ public class DepartamentoServico {
 		return list; 
 		Troca essa implementação mocada (ENFEITE) */
 	}
+	
+	public void salvarOuAtualizar(Departamento obj) {
+		/*
+		 * Vou fazer o que com o objeto que está vindo no parametro?
+		 * Vou ter que ver se eu tenho que inserir um novo Departamento
+		 * ou atualizar o Departamento existe.
+		 * vou testar se esse objeto ele tem um ID igual a nulo.
+		 */
+		if(obj.getId() == null) {
+			//Significa que estou inserindo um novo departamento
+			dao.insert(obj);
+		}else {
+			//significa que já existe
+			dao.update(obj);
+		}
+	}
 
 }
