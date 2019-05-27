@@ -45,5 +45,10 @@ public class DepartamentoServico {
 			dao.update(obj);
 		}
 	}
+	
+	public void remover(Departamento obj) {
+		//remover um departamento do banco de dados.
+		dao.deleteById(obj.getId());
+	}
 
 }

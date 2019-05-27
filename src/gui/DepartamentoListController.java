@@ -1,24 +1,27 @@
 package gui;
 
-import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import aplicacao.Main;
+import db.DbIntegrityException;
 import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -52,6 +55,9 @@ public class DepartamentoListController implements Initializable, DataChangeList
 
 	@FXML
 	private TableColumn<Departamento, Departamento> tabelaColunaEdit;
+
+	@FXML
+	private TableColumn<Departamento, Departamento> tabelaColunaRemove;
 
 	@FXML
 	private Button btNovo;
@@ -128,12 +134,13 @@ public class DepartamentoListController implements Initializable, DataChangeList
 		obsList = FXCollections.observableArrayList(list);
 		// Carregar os itens na tabelaView e mostrar na tela.
 		tabelaViewDepartamento.setItems(obsList);
-		//Aqui vai ser um novo botãozinho
-		//com o texto edit em cada linha da tabela
-		//E cada botãozinho desse, quando você clicar
+		// Aqui vai ser um novo botãozinho
+		// com o texto edit em cada linha da tabela
+		// E cada botãozinho desse, quando você clicar
 		// ele vai abrir o formulário de edição.
-		//usando o criarDialogForm
+		// usando o criarDialogForm
 		initEditButtons();
+		initRemoveButtons();
 
 	}
 
@@ -208,7 +215,7 @@ public class DepartamentoListController implements Initializable, DataChangeList
 
 	}
 
-	//Botão EDIT
+	// Botão EDIT
 	private void initEditButtons() {
 		tabelaColunaEdit.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tabelaColunaEdit.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
@@ -228,4 +235,44 @@ public class DepartamentoListController implements Initializable, DataChangeList
 		});
 	}
 
+	// Botão DELETAR
+	private void initRemoveButtons() {
+		tabelaColunaRemove.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tabelaColunaRemove.setCellFactory(param -> new TableCell<Departamento, Departamento>() {
+			private final Button button = new Button("remove");
+
+			@Override
+			protected void updateItem(Departamento obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removerEntidade(obj));
+			}
+		});
+	}
+
+	private void removerEntidade(Departamento obj) {
+		//o resultado desse alert que vai ser um botão de delete
+		//Vou botar dentro do Optional<ButtonType>
+		Optional<ButtonType> resultado = Alerts.showConfirmation("Confirmação", "Tem certeza que deseja deletar?");
+		//Por que o .get? Por que o Optional é um objeto que carrega um objeto dentro dele
+		if(resultado.get() == ButtonType.OK) {
+			if(servico == null) {
+				//Se o servico for nulo é por que o programador esqueceu de injetar.
+				//Vou lançar uma excessao
+				throw new IllegalStateException("Servico está nulo");
+			}
+			try {
+				servico.remover(obj);
+				//Depois que eu remover vou atulizar a tabela
+				//Para forçar ele atualizar os dados da tabela.
+				atualizarTabelaView();
+			}catch(DbIntegrityException e) {
+				Alerts.showAlert("Erro removendo objeto", null, e.getMessage(), AlertType.ERROR);
+			}
+		}
+	}
 }

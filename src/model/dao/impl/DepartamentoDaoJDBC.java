@@ -11,6 +11,7 @@ import com.mysql.jdbc.Statement;
 
 import db.DB;
 import db.DbException;
+import db.DbIntegrityException;
 import model.dao.DepartamentoDao;
 import model.entidades.Departamento;
 
@@ -100,14 +101,11 @@ public class DepartamentoDaoJDBC implements DepartamentoDao {
 			//Configurar o valor do place holder.
 			//O 1º ?, e no 2º coloca o que veio por parametro.
 			st.setInt(1, id);
-			int linhasAfetadas = st.executeUpdate();
 			
-			if(linhasAfetadas == 0) {
-				throw new DbException("Departamento invalido!");
-			}
+			st.executeUpdate();
 			
 		}catch(SQLException e) {
-			throw new DbException(e.getMessage());
+			throw new DbIntegrityException(e.getMessage());
 		}finally {
 			DB.closeStatement(st);
 		}
