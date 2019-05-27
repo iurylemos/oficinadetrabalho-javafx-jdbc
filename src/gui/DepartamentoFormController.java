@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
+import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -25,6 +28,13 @@ public class DepartamentoFormController implements Initializable {
 	
 	//Depedencia com Departamento Servico
 	private DepartamentoServico servico;
+	
+	//Lista sobre modificações de dados.
+	//O meu controlador agora tem uma lista de moficações de dados.
+	
+	//Ele vai permitir outros objetos se increverem nessa lista
+	//E receberem o evento
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 	
 	
 	
@@ -56,6 +66,16 @@ public class DepartamentoFormController implements Initializable {
 		this.servico = servico;
 	}
 	
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		/*
+		 * Agora outros objetos, desde que eles implementem essa interface
+		 * que é DatachangeListener eles podem se inscrever para receber
+		 * o evento da minha classe.
+		 */
+		//Esse metodo vai ter que inscrever esse listener na minha lista.
+		dataChangeListeners.add(listener);
+	}
+	
 	
 	
 	//Metodos para as ações
@@ -79,6 +99,8 @@ public class DepartamentoFormController implements Initializable {
 			entidadeDepartamento = getFormData();
 			//Salvei no banco de dados ou atualizei
 			servico.salvarOuAtualizar(entidadeDepartamento);
+			//criei esse metodo abaixo, que emite um evento na lista.
+			notificacaoDataChangeListeners();
 			//Fechando a janela.
 			Utils.palcoAtual(evento).close();
 		}catch (DbException e) {
@@ -87,6 +109,21 @@ public class DepartamentoFormController implements Initializable {
 		
 	}
 	
+	private void notificacaoDataChangeListeners() {
+		//Executando o onDataChanged(); em cada um dos listerners
+		//Em outras palavras vou emitir esse evento que é o onDataChanged() aqui para os meus listeners
+		/*
+		 * Para cada listeners pertencente ao meu dataChangeListeners
+		 * vai pegar o listener e botar onDataChanged()
+		 * 
+		 */
+		for(DataChangeListener listener: dataChangeListeners) {
+			listener.onDataChanged();
+		}
+		
+		
+	}
+
 	private Departamento getFormData() {
 		//pegar os dados do formulário.
 		/*

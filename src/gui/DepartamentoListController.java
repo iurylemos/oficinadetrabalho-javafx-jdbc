@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import aplicacao.Main;
+import gui.listener.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import javafx.stage.Stage;
 import model.entidades.Departamento;
 import model.servicos.DepartamentoServico;
 
-public class DepartamentoListController implements Initializable {
+public class DepartamentoListController implements Initializable, DataChangeListener {
 	
 	
 	//Depedência
@@ -166,7 +167,19 @@ public class DepartamentoListController implements Initializable {
 			 * Injetando manualmente a depedência
 			 */
 			controller.setDepartamentoServico(new DepartamentoServico());
+			//Escutando os eventos com o Observe
+			//Do onDataChanged
+			/*
+			 * E com isso estou me inscrevendo para receber aquele evento
+			 * que é onDataChanged
+			 * utilizando this, que é a autoreferência.
+			 */
+			controller.subscribeDataChangeListener(this);
 			controller.atualizarDadosFormulario();
+			
+			
+			
+			//
 			
 			/*
 			 * Quando eu vou carregar uma janela de dialogo modal na frente janela existente
@@ -188,6 +201,14 @@ public class DepartamentoListController implements Initializable {
 		}catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Erro carregando a view", e.getMessage(), AlertType.ERROR);
 		}
+		
+	}
+
+	@Override
+	public void onDataChanged() {
+		//Notificação que os dados foram alterados.
+		//Vou atualizar os dados da minha tabela
+		atualizarTabelaView();
 		
 	}
 	
