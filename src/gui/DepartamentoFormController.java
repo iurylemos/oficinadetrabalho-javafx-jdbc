@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listener.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entidades.Departamento;
+import model.exceptions.ValidacaoException;
 import model.servicos.DepartamentoServico;
 
 public class DepartamentoFormController implements Initializable {
@@ -103,6 +106,9 @@ public class DepartamentoFormController implements Initializable {
 			notificacaoDataChangeListeners();
 			//Fechando a janela.
 			Utils.palcoAtual(evento).close();
+		}catch(ValidacaoException e) {
+			setMensagemErros(e.getErros());
+				
 		}catch (DbException e) {
 			Alerts.showAlert("Error salvando objeto", null, e.getMessage(), AlertType.ERROR);
 		}
@@ -136,9 +142,29 @@ public class DepartamentoFormController implements Initializable {
 		 * Se retornar nulo, vai  ser um valor pra inserção.
 		 */
 		Departamento obj = new Departamento();
+		//Utilizar o objeto para um erro de excessao.
+		ValidacaoException excessao = new ValidacaoException("Erro na Validação");
+		
+		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 		//Como o Nome já é String vou pegar direto
-		obj.setNome(txtNome.getText());
+		//Se o texto estiver nulo, ou se o texto eliminando os espaços em branco
+		//Seja no inicio ou no final com o TRIM se isso aqui for igual
+		//ao String vázio. Significa que a minha caixinha está vazia.
+			if(txtNome.getText() == null || txtNome.getText().trim().equals("")) {
+				excessao.addError("name", "O campo não pode ser vázio");
+			}
+			//Mesmo vázio eu vou setar.
+			obj.setNome(txtNome.getText());
+		
+			/*
+			 * Agora vou testar se na minha coleção de erros
+			 * Tem pelo menos um erro lá
+			 * se isso aqui for verdade vou lançar a minha excessao.
+			 */
+			if(excessao.getErros().size() > 0) {
+				throw excessao;
+			}
 		
 		return obj;
 	}
@@ -182,4 +208,28 @@ public class DepartamentoFormController implements Initializable {
 		//
 		txtNome.setText(entidadeDepartamento.getNome());
 	}
+	
+	/*
+	 * Vou passar como argumento o map
+	 * Essa coleção vai carregar os erros
+	 * E com esse metodo vou pecorrer essa coleção
+	 * preechendo os erros na caixinha de texto do formulário
+	 */
+	private void setMensagemErros(Map<String, String> erros) {
+		//Set é outra coleção, é o conjunto.
+		Set<String> fields = erros.keySet();
+		//vou pecorrer esse conjunto.
+		//se nesse meu set de fields contem valor "name"
+		//que no caso eu fiz lá em cima no getFormData
+		//ESTOU TESTANDO SE NESSE CONJUNTO EXISTE A CHAVE NAME
+		//SE EXISTIR VOU PEGAR O MEU LABELERRORNAME, e setar o texto dele
+		//COM A MENSAGEM DE ERROR
+		if(fields.contains("name")) 
+		{
+			//pegando a mensagem correspondente ao campo name
+			//e setando no error que é labelErrorName
+			labelErrorNome.setText(erros.get("name"));
+		}
+	}
+	
 }
