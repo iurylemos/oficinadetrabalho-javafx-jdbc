@@ -41,7 +41,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 			
 			st.setString(1, obj.getNome());
 			st.setString(2, obj.getEmail());
-			st.setDate(3, new java.sql.Date(obj.getDataDeAniversario().getTime()));
+			st.setDate(3, new java.sql.Date(obj.getDataNascimento().getTime()));
 			st.setDouble(4, obj.getSalarioBase());
 			//Para buscar o DepartmentId do funcionário
 			//Tenho que colocar o obj entrando no Departamento, e partir o departamento eu entro no ID
@@ -90,7 +90,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 			
 			st.setString(1, obj.getNome());
 			st.setString(2, obj.getEmail());
-			st.setDate(3, new java.sql.Date(obj.getDataDeAniversario().getTime()));
+			st.setDate(3, new java.sql.Date(obj.getDataNascimento().getTime()));
 			st.setDouble(4, obj.getSalarioBase());
 			st.setInt(5, obj.getDepartamento().getId()); //ID do Departamento
 			st.setInt(6, obj.getId()); //Esse é o ID do Vendedor
@@ -191,7 +191,7 @@ public class VendedorDaoJDBC implements VendedorDao {
 		obj.setNome(rs.getString("Name"));
 		obj.setEmail(rs.getString("Email"));
 		obj.setSalarioBase(rs.getDouble("BaseSalary"));
-		obj.setDataDeAniversario(rs.getDate("BirthDate"));
+		obj.setDataNascimento(rs.getDate("BirthDate"));
 		obj.setDepartamento(dep);
 		return obj;
 	}

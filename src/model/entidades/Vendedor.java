@@ -12,7 +12,7 @@ public class Vendedor implements Serializable {
 	private Integer id;
 	private String nome;
 	private String email;
-	private Date dataDeAniversario;
+	private Date dataNascimento;
 	private Double salarioBase;
 
 	//Composição
@@ -22,12 +22,12 @@ public class Vendedor implements Serializable {
 		
 	}
 
-	public Vendedor(Integer id, String nome, String email, Date dataDeAniversario, Double salarioBase,
+	public Vendedor(Integer id, String nome, String email, Date dataNascimento, Double salarioBase,
 			Departamento departamento) {
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
-		this.dataDeAniversario = dataDeAniversario;
+		this.dataNascimento = dataNascimento;
 		this.salarioBase = salarioBase;
 		this.departamento = departamento;
 	}
@@ -56,12 +56,12 @@ public class Vendedor implements Serializable {
 		this.email = email;
 	}
 
-	public Date getDataDeAniversario() {
-		return dataDeAniversario;
+	public Date getDataNascimento() {
+		return dataNascimento;
 	}
 
-	public void setDataDeAniversario(Date dataDeAniversario) {
-		this.dataDeAniversario = dataDeAniversario;
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
 	}
 
 	public Double getSalarioBase() {
@@ -107,7 +107,7 @@ public class Vendedor implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Vendedor [id=" + id + ", nome=" + nome + ", email=" + email + ", dataDeAniversario=" + dataDeAniversario
+		return "Vendedor [id=" + id + ", nome=" + nome + ", email=" + email + ", dataNascimento=" + dataNascimento
 				+ ", salarioBase=" + salarioBase + ", departamento=" + departamento + "]";
 	}
 	

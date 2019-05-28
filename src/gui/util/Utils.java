@@ -1,5 +1,9 @@
 package gui.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -43,4 +47,13 @@ public class Utils {
 		}
 	}
 	
+	public static java.sql.Date tryParseToDate(String str) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Date dataf = sdf.parse(str);
+			return new java.sql.Date(dataf.getTime());
+		} catch (ParseException e) {
+			return null;
+		}
+	}
 }
